@@ -4,7 +4,7 @@
 
 ### BITCOIN CORE
 
-'''batch
+1. Bitcoin Core실행
+```batch
 bitcoind.exe -regtest -datadir=“../data" -rpcport=1111 -port=8881
-
-'''
+```
