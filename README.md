@@ -6,5 +6,5 @@
 
 1. Bitcoin Core실행
 ```batch
-bitcoind.exe -regtest -datadir=“../data" -rpcport=1111 -port=8881
+bitcoind.exe -regtest -datadir=“../data" -rpcport="bitcoin-cli 포트번호" -port="포트번호"
 ```
