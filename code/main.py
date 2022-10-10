@@ -1,6 +1,7 @@
 #from distutils.filelist import findall
 import subprocess
 import re
+import json
 
 #daemon까지가 들어가서 실행
 #bitcoind.exe -regtest -datadir="../data" -rpcport=1234 -port=8881 -txindex
@@ -24,7 +25,6 @@ def loadblock(blocknumber):
 
     #해당 블록의 정보를 가져옴
     blockinfo = nodecmd("getblock", str(blockhash))
-    print(blockinfo)
 
     #정규표현식 파싱을 통해 블록의 트랜잭션 값만 가져옴
     matchtxs = re.compile('\\[[^]]*\\]')
@@ -42,17 +42,25 @@ def savetx(txlist, blocknumber):
         getrawtx = str(nodecmd("getrawtransaction", txlist[i]))
         #hex값 해독
         txinfo = str(nodecmd("decoderawtransaction", getrawtx))
-        print(txinfo)
+
+        #vin 개수
+        count_vin = txinfo.count("vin")
 
         #vin, vout 파싱
         vinmatch = re.compile("\[[^]]*\\]")
         vin = vinmatch.findall(txinfo)
-        print(vin)
-        
+
         pointermatch = re.compile("[a-z0-9]{63,64}")
         pointer = pointermatch.findall(str(vin))
-        print(pointer)
 
+        for i in range(count_vin):
+            data['Info'] = txlist[i]
+            data['Pointer'] = pointer[i]
+
+    #json 파일 저장
+    file_path = 'C:\\Users\\smj10\\Desktop\\blockchain\\Bitcoin_Asset_Tracking\\TXDB\\'+blocknumber+'.json'
+    with open(file_path, 'w') as f : 
+	    json.dump(data, f)
 
 def searchnexttx(searchtxinfo, blocknumber):
     list = []
