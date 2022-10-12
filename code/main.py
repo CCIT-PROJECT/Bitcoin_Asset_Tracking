@@ -2,11 +2,8 @@
 import subprocess
 import re
 import json
-<<<<<<< HEAD
 import TX_to_Address
-=======
 
->>>>>>> 8051ecacf08592c2b176d548f922ce5894c03a97
 #daemon까지가 들어가서 실행
 #bitcoind.exe -regtest -datadir="../data" -rpcport=1234 -port=8881 -txindex
 
@@ -40,55 +37,31 @@ def loadblock(blocknumber):
     return txlist
 
 def savetx(txlist, blocknumber):
-    data = {}
-    pointer = []
     for i in range(0, len(txlist), 1):
+
+        data = {}
+        pointer = []
         #getrawtransaction으로 해당 트랜잭션의 정보를 hex값으로 얻어옴
         getrawtx = str(nodecmd("getrawtransaction", txlist[i]))
         #hex값 해독
         txinfo = str(nodecmd("decoderawtransaction", getrawtx))
-<<<<<<< HEAD
-=======
-
-        #vin 개수
-        count_vin = txinfo.count("vin")
->>>>>>> 8051ecacf08592c2b176d548f922ce5894c03a97
-
         #vin 개수
         count_vin = txinfo.count("vin")
 
         #vin만 파싱하게끔 바꿔야됨
-        vinmatch = re.compile('vin.*vout')#정규표현식 수정하기
+        vinmatch = re.compile('\[[^]]*\]')#정규표현식 수정하기
         vin = vinmatch.findall(txinfo)
-<<<<<<< HEAD
-        pointermatch = re.compile("[a-z0- 9]{63,64}")
-        pointer = pointermatch.findall(str(vin))
-
-        data['Info'] = txlist[i]
-        data['Pointer'] = pointer
-        file_path = TxdbPath + blocknumber+'.json'
-        with open(file_path, 'a') as f : 
-	        json.dump(pointer, f)
-
-
-        
-        
-    
-    #json 파일 저장
-=======
-
         pointermatch = re.compile("[a-z0-9]{63,64}")
         pointer = pointermatch.findall(str(vin))
->>>>>>> 8051ecacf08592c2b176d548f922ce5894c03a97
 
-        for i in range(count_vin):
-            data['Info'] = txlist[i]
-            data['Pointer'] = pointer[i]
+        
+        data['Info'] = txlist[i]
+        data['Pointer'] = pointer[0:count_vin]
+        file_path = TxdbPath + blocknumber+'.json'
+        with open(file_path, 'a') as f : 
+            json.dump(data, f)
+        #반드시 json파일 다 지운다음에 할 것!
 
-    #json 파일 저장
-    file_path = 'C:\\Users\\smj10\\Desktop\\blockchain\\Bitcoin_Asset_Tracking\\TXDB\\'+blocknumber+'.json'
-    with open(file_path, 'w') as f : 
-	    json.dump(data, f)
 
 def searchnexttx(searchtxinfo, blocknumber):
     list = []

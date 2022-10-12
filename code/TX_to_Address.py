@@ -24,7 +24,7 @@ def tx_to_walletAddress(tx_address):
 
 def searchnexttx() :
     with open("D:\\Bitcoin\\txinfo\\"+"1.json",'r') as f:
-        json_data = json.load(f)
+        json_data = json.loads(f)#loads 써보자
     print((json_data))
     # for i in range(1, blocknumber+1) :
     #     pass
