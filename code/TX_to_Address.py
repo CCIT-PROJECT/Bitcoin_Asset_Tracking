@@ -23,19 +23,22 @@ def tx_to_walletAddress(tx_address):
 
 
 def searchnexttx() :
-    with open("D:\\Bitcoin\\txinfo\\"+"1.json",'r') as f:
-        json_data = json.loads(f)#loads 써보자
-    print((json_data))
+    json_data = {"Info","Pointer"}
+    with open(TxdbPath + "103.json",'rb') as f:
+        json_data = json.load(f)
+    print((json_data['0']['Pointer']))
     # for i in range(1, blocknumber+1) :
     #     pass
 
 def main():
-    
+    global TxdbPath
+    TxdbPath = "C:\\Users\\JaeKyeom\\Desktop\\Bitcoin_Asset_Tracking\\Bitcoin_Asset_Tracking\\TXDB\\ "
     #os.system("C:\\Users\\JaeKyeom\Desktop\\Bitcoin_Asset_Tracking\\Bitcoin_Asset_Tracking\\BitcoinCore\\daemon\\bitcoind.exe -regtest -txindex -rpcport=1111 -datadir=C:\\Users\\JaeKyeom\\Desktop\\Bitcoin_Asset_Tracking\\Bitcoin_Asset_Tracking\\BitcoinCore\\data -port=8881")
     # print(nodecmd("getrawtransaction 784c7115114ff74d49ad2624f4d520c2f60fb3ebb8480834c7c51c1427dcffa2"))
     wallet_address_list = tx_to_walletAddress("4f91c18dfcdb50e68b48ff3ee89ebf42f3c7fd0d4a2b14e331691829a7f22313")
     print(wallet_address_list)
     searchnexttx()
+    
 
 
 if __name__ == '__main__' :

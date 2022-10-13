@@ -37,10 +37,10 @@ def loadblock(blocknumber):
     return txlist
 
 def savetx(txlist, blocknumber):
+    data = {}
     for i in range(0, len(txlist), 1):
 
-        data = {}
-        pointer = []
+        
         #getrawtransaction으로 해당 트랜잭션의 정보를 hex값으로 얻어옴
         getrawtx = str(nodecmd("getrawtransaction", txlist[i]))
         #hex값 해독
@@ -48,18 +48,21 @@ def savetx(txlist, blocknumber):
         #vin 개수
         count_vin = txinfo.count("vin")
 
-        #vin만 파싱하게끔 바꿔야됨
-        vinmatch = re.compile('\[[^]]*\]')#정규표현식 수정하기
+        #vin,vout 파싱
+        vinmatch = re.compile('\[[^]]*\]')
         vin = vinmatch.findall(txinfo)
+
+        #tx pointer값 가져오기
         pointermatch = re.compile("[a-z0-9]{63,64}")
         pointer = pointermatch.findall(str(vin))
 
-        
-        data['Info'] = txlist[i]
-        data['Pointer'] = pointer[0:count_vin]
-        file_path = TxdbPath + blocknumber+'.json'
-        with open(file_path, 'a') as f : 
-            json.dump(data, f)
+        data[i] = {'Info' : txlist[i], 'Pointer' : pointer[0:count_vin]}
+
+
+
+    file_path = TxdbPath + blocknumber+'.json'
+    with open(file_path, 'w') as f : 
+        json.dump(data, f)
         #반드시 json파일 다 지운다음에 할 것!
 
 
