@@ -3,6 +3,7 @@ import subprocess
 import re
 import json
 import TX_to_Address
+from anytree import Node, RenderTree
 
 #daemon까지가 들어가서 실행
 #bitcoind.exe -regtest -datadir="../data" -rpcport=1234 -port=8881 -txindex
@@ -63,13 +64,41 @@ def savetx(txlist, blocknumber):
     file_path = TxdbPath + blocknumber+'.json'
     with open(file_path, 'w') as f : 
         json.dump(data, f)
-        #반드시 json파일 다 지운다음에 할 것!
 
 
-def searchnexttx(searchtxinfo, blocknumber):
-    list = []
-    for s in range(1, blocknumber, 1):
-        stostring = s
+def searchnexttx(searchtxinfo, blocknumber,tree):
+    i = 0
+    nexttxlist = []
+    for i in range (1, blocknumber+1):
+        #1 ~ 마지막 블록까지 저장해놓은 json파일을 불러옴
+        json_data = {'Info','Pointer'}
+        with open(TxdbPath + str(i) +".json",'rb') as f:
+            json_data = json.load(f)
+        for j in range (0,len(json_data)):
+            for k in range (0,len(json_data[str(j)]['Pointer'])):
+                if json_data[str(j)]['Pointer'][k] == searchtxinfo:
+                    nexttxlist.append(json_data[str(j)]['Info'])
+
+                    #json파일을 불러온 후, pointer값이 searchtxinfo와 같으면, info값을 list에 추가
+    for i in range(0,len(nexttxlist)):
+        child_Node = Node('tx',data=nexttxlist[i],parent=tree)
+        tree = searchnexttx(nexttxlist[i],blocknumber,child_Node)#뭔가 이상 수정필요
+    return tree
+
+def tx_to_walletAddress(tx_address):
+    raw_tx_result = nodecmd("getrawtransaction", tx_address) #getrawtransaction result
+    decode_tx_result= nodecmd("decoderawtransaction", raw_tx_result) #decoderawtransaction result
+
+    address_parser1 = re.compile('"address": "[a-z0-9]{30,35}')
+    address_parser1_result = address_parser1.findall(decode_tx_result)
+    #address "wallet_address" 부분 파싱해서 가져오기
+
+    address_parser2 = re.compile('[a-z0-9]{30,35}')
+    address_parser2_reuslt = address_parser2.findall(str(address_parser1_result))
+    #wallet_address만 파싱
+
+    return address_parser2_reuslt
+    
 
 # 메인 함수
 def main():
@@ -84,12 +113,22 @@ def main():
 
     for i in range(1, blocknumber+1, 1):
         txlist = loadblock(str(i))
-        if i==103 :
-            print("")
-        savetx(txlist, str(i))
+        #savetx(txlist, str(i))
+
+    root = Node('root',data=searchtx)
+    new_tree = searchnexttx(searchtx, blocknumber,root)
+    copy_tree = new_tree
+    for row in RenderTree(new_tree):
+        pre, fill, node = row
+        print(f"{pre}{node.name}, data: {node.data}")
+    for row in RenderTree(copy_tree):
+        pre, fill, node = row
+        node.data = tx_to_walletAddress(node.data)
+        print(f"{pre}{node.name}, data: {node.data}")
 
     
-    searchnexttx(searchtx, blocknumber)
 
 if __name__ == '__main__':
     main()
+#4f91c18dfcdb50e68b48ff3ee89ebf42f3c7fd0d4a2b14e331691829a7f22313
+#c5381a2bad8dd0623ba63d7bf1b050cceb58f1a018d8aad4dcc6aa89a09710bd

@@ -1,6 +1,7 @@
 import re
 import os
 import json
+from anytree import Node, RenderTree
 
 def nodecmd(cmd) :
     node = "C:\\Users\\JaeKyeom\\Desktop\\Bitcoin_Asset_Tracking\\Bitcoin_Asset_Tracking\\BitcoinCore\\daemon\\bitcoin-cli -regtest -rpcport=1234 -datadir=C:\\Users\\JaeKyeom\\Desktop\\Bitcoin_Asset_Tracking\\Bitcoin_Asset_Tracking\\BitcoinCore\\data "
@@ -37,8 +38,15 @@ def main():
     # print(nodecmd("getrawtransaction 784c7115114ff74d49ad2624f4d520c2f60fb3ebb8480834c7c51c1427dcffa2"))
     wallet_address_list = tx_to_walletAddress("4f91c18dfcdb50e68b48ff3ee89ebf42f3c7fd0d4a2b14e331691829a7f22313")
     print(wallet_address_list)
-    searchnexttx()
-    
+    #searchnexttx()
+    i = 0
+    treedata = [1,2,3]
+    v = 'root'
+    root = Node(v,data=i)
+    Node(v + "2", parent=root,data=treedata)
+    for row in RenderTree(root):
+        pre, fill, node = row
+        print(f"{pre}{node.name}, data: {node.data}")
 
 
 if __name__ == '__main__' :
