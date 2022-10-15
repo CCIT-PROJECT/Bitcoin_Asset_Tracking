@@ -83,7 +83,6 @@ def searchnexttx(searchtxinfo, blocknumber,tree):
     for i in range(0,len(nexttxlist)):
         child_Node = Node('tx',data=nexttxlist[i],parent=tree)
         tree = searchnexttx(nexttxlist[i],blocknumber,child_Node)#뭔가 이상 수정필요
-    return tree
 
 def tx_to_walletAddress(tx_address):
     raw_tx_result = nodecmd("getrawtransaction", tx_address) #getrawtransaction result
@@ -113,12 +112,12 @@ def main():
 
     for i in range(1, blocknumber+1, 1):
         txlist = loadblock(str(i))
-        #savetx(txlist, str(i))
+       # savetx(txlist, str(i))
 
     root = Node('root',data=searchtx)
-    new_tree = searchnexttx(searchtx, blocknumber,root)
-    copy_tree = new_tree
-    for row in RenderTree(new_tree):
+    searchnexttx(searchtx, blocknumber,root)
+    copy_tree = root
+    for row in RenderTree(root):
         pre, fill, node = row
         print(f"{pre}{node.name}, data: {node.data}")
     for row in RenderTree(copy_tree):
