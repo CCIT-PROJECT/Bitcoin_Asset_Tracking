@@ -82,16 +82,17 @@ def searchnexttx(searchtxinfo, blocknumber,tree):
                     #json파일을 불러온 후, pointer값이 searchtxinfo와 같으면, info값을 list에 추가
     for i in range(0,len(nexttxlist)):
         child_Node = Node('tx',data=nexttxlist[i],parent=tree)
-        tree = searchnexttx(nexttxlist[i],blocknumber,child_Node)#뭔가 이상 수정필요
+        tree = searchnexttx(nexttxlist[i],blocknumber,child_Node)
 
 def tx_to_walletAddress(tx_address):
-    raw_tx_result = nodecmd("getrawtransaction", tx_address) #getrawtransaction result
-    decode_tx_result= nodecmd("decoderawtransaction", raw_tx_result) #decoderawtransaction result
+    raw_tx_result = nodecmd("getrawtransaction", tx_address)
+    #getrawtransaction result
+    decode_tx_result= nodecmd("decoderawtransaction", raw_tx_result)
+    #decoderawtransaction result
 
     address_parser1 = re.compile('"address": "[a-z0-9]{30,35}')
     address_parser1_result = address_parser1.findall(decode_tx_result)
     #address "wallet_address" 부분 파싱해서 가져오기
-
     address_parser2 = re.compile('[a-z0-9]{30,35}')
     address_parser2_reuslt = address_parser2.findall(str(address_parser1_result))
     #wallet_address만 파싱
@@ -112,7 +113,7 @@ def main():
 
     for i in range(1, blocknumber+1, 1):
         txlist = loadblock(str(i))
-       # savetx(txlist, str(i))
+        savetx(txlist, str(i))
 
     root = Node('root',data=searchtx)
     searchnexttx(searchtx, blocknumber,root)
@@ -120,6 +121,7 @@ def main():
     for row in RenderTree(root):
         pre, fill, node = row
         print(f"{pre}{node.name}, data: {node.data}")
+    print("\n\n")
     for row in RenderTree(copy_tree):
         pre, fill, node = row
         node.data = tx_to_walletAddress(node.data)
@@ -129,5 +131,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-#4f91c18dfcdb50e68b48ff3ee89ebf42f3c7fd0d4a2b14e331691829a7f22313
-#c5381a2bad8dd0623ba63d7bf1b050cceb58f1a018d8aad4dcc6aa89a09710bd
+#f4fd2ac3e1dde46baaa734b9a5ca9108a0523cc94f5e4e690d2b3c6a45a794cc
