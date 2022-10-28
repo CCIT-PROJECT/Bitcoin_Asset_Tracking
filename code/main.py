@@ -1,8 +1,8 @@
 import subprocess
 import re
 import json
-import TX_to_Address
-from anytree import Node, RenderTree
+#import TX_to_Address
+from anytree import Node, RenderTree, exporter
 import os
 
 #daemon까지가 들어가서 실행
@@ -98,6 +98,9 @@ def tx_to_walletAddress(tx_address):
     #wallet_address만 파싱
 
     return address_parser2_reuslt
+
+def visualization(tree):
+    exporter.DotExporter(tree).to_picture("test.png")
     
 
 # 메인 함수
@@ -125,14 +128,24 @@ def main():
     root = Node('root',data=searchtx)
     searchnexttx(searchtx, blocknumber,root)
     copy_tree = root
+    
     for row in RenderTree(root):
+        root.name = root.data
         pre, fill, node = row
+        node.name = node.data
         print(f"{pre}{node.name}, data: {node.data}")
     print("\n\n")
+    # visualization(root)
+    #print("\n\n")
+    
     for row in RenderTree(copy_tree):
         pre, fill, node = row
+        root.name = root.data
         node.data = tx_to_walletAddress(node.data)
+
+        node.name = node.data
         print(f"{pre}{node.name}, data: {node.data}")
+    visualization(root)
 
     
 
