@@ -2,8 +2,8 @@
 import subprocess
 import re
 import json
-import TX_to_Address
-from anytree import Node, RenderTree
+from anytree import Node, RenderTree, exporter
+
 
 #daemon까지가 들어가서 실행
 #bitcoind.exe -regtest -datadir="../data" -rpcport=1234 -port=8881 -txindex
@@ -78,11 +78,10 @@ def searchnexttx(searchtxinfo, blocknumber,tree):
             for k in range (0,len(json_data[str(j)]['Pointer'])):
                 if json_data[str(j)]['Pointer'][k] == searchtxinfo:
                     nexttxlist.append(json_data[str(j)]['Info'])
-
                     #json파일을 불러온 후, pointer값이 searchtxinfo와 같으면, info값을 list에 추가
-    for i in range(0,len(nexttxlist)):
-        child_Node = Node('tx',data=nexttxlist[i],parent=tree)
-        tree = searchnexttx(nexttxlist[i],blocknumber,child_Node)
+    for i in nexttxlist:
+        child_Node = Node('tx',data=i,parent=tree)
+        searchnexttx(i,blocknumber,child_Node)
 
 def tx_to_walletAddress(tx_address):
     raw_tx_result = nodecmd("getrawtransaction", tx_address)
@@ -98,6 +97,8 @@ def tx_to_walletAddress(tx_address):
     #wallet_address만 파싱
 
     return address_parser2_reuslt
+
+
     
 
 # 메인 함수
@@ -113,7 +114,7 @@ def main():
 
     for i in range(1, blocknumber+1, 1):
         txlist = loadblock(str(i))
-        savetx(txlist, str(i))
+        #savetx(txlist, str(i))
 
     root = Node('root',data=searchtx)
     searchnexttx(searchtx, blocknumber,root)
@@ -126,9 +127,9 @@ def main():
         pre, fill, node = row
         node.data = tx_to_walletAddress(node.data)
         print(f"{pre}{node.name}, data: {node.data}")
-
+    exporter.DotExporter(root).to_picture("C:\\Users\\JaeKyeom\\Desktop\\Bitcoin_Asset_Tracking\\test.dot")
     
 
 if __name__ == '__main__':
     main()
-#f4fd2ac3e1dde46baaa734b9a5ca9108a0523cc94f5e4e690d2b3c6a45a794cc
+#181420f3e6f6207058db8ea9f7379bc6c0d4552acf2db8f4ce57968bb449b33f
