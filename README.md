@@ -1,6 +1,6 @@
 # Bitcoin_Asset_Tracking
 - This program is a Bitcoin tracking program that uses Bitcoin Core
-- 
+
 ## HOW TO USE?
 
 ### BITCOIN CORE
