@@ -3,8 +3,6 @@
 
 ## HOW TO USE?
 
-### BITCOIN CORE
-
 1. Bitcoin Core launch
 ```batch
 bitcoind.exe -datadir=“../data" -rpcport="rpc port number" -port="port number" -txindex
